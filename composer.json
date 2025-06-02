@@ -1,0 +1,19 @@
+{
+    "name": "rxkk/app",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Rxkk\\App\\": "src/",
+            "Rxkk\\Sys\\": "sys/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8",
+        "ext-mysqli": "*",
+        "vlucas/phpdotenv": "*",
+        "symfony/var-dumper": "*",
+        "rxkk/lib": "*"
+    }
+}
