@@ -1,0 +1,39 @@
+<?php
+
+namespace Rxkk\App\Facade;
+
+
+use Rxkk\Lib\Env;
+use Rxkk\Lib\MySQL;
+
+/**
+ * @DOC Class for example. You can delete it.
+ */
+class Test {
+    /**
+     * @DOC [your_param] just example how to run it
+     * @EXAMPLE x Test::example myParam
+     */
+    public static function example($yourParams = null) {
+        var_dump('var_dump from Test::test with params: ', $yourParams);
+        return 'text from Test::test with params: ' . $yourParams;
+    }
+
+    /**
+     * @DOC <envName> get environment variable from .env OR system environment
+     * @EXAMPLE x Test::env test
+     */
+    public static function env($envName) {
+        $envValue = Env::get($envName);
+        return $envValue;
+    }
+
+    /**
+     * @DOC test MySQL connection
+     * @EXAMPLE x Test::testMySQL
+     */
+    public static function testMYSQL() {
+        $version = MySQL::q("SELECT VERSION()");
+        return $version;
+    }
+}
