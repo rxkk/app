@@ -5,6 +5,7 @@ use Rxkk\Lib\Env;
 use Rxkk\Lib\Exception\AppException;
 use Rxkk\Sys\FacadeHandler;
 use Rxkk\Lib\Console;
+use Rxkk\Sys\McpServer;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 
@@ -61,6 +62,12 @@ function commandHandler($command, $argv) {
             return "custom command: $ticket_command $ticket_command_sub";
         case 'code':
             $facadeHandler->printFullList();
+            return null;
+        case 'mcp':
+            // Suppress deprecated notices so they don't pollute the JSON-RPC stdout stream
+            error_reporting(E_ALL & ~E_DEPRECATED);
+            $mcpServer = new McpServer($facadeHandler);
+            $mcpServer->run();
             return null;
         default:
             if ($facadeHandler->isCodeHandler($command)) {
