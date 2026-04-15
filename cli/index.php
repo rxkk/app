@@ -5,6 +5,7 @@ use Rxkk\Lib\Env;
 use Rxkk\Lib\Exception\AppException;
 use Rxkk\Sys\FacadeHandler;
 use Rxkk\Lib\Console;
+use Rxkk\Lib\Logger\Logger;
 use Rxkk\Sys\McpServer;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
@@ -12,7 +13,7 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-error_reporting(E_ALL);
+error_reporting(E_ERROR | E_PARSE);
 ini_set('display_errors', 'On');
 
 # set root directory
@@ -27,6 +28,9 @@ if (file_exists($envPath)) {
 }
 
 Console::setArguments($argv);
+
+// Bootstrap default logger (reads LOG_LEVEL from env, defaults to 'info')
+Logger::setLogger(Logger::createLoggerWithStdoutColorConsole('app'));
 
 try {
     $command = $argv[1] ?? '';
@@ -64,8 +68,9 @@ function commandHandler($command, $argv) {
             $facadeHandler->printFullList();
             return null;
         case 'mcp':
-            // Suppress deprecated notices so they don't pollute the JSON-RPC stdout stream
-            error_reporting(E_ALL & ~E_DEPRECATED);
+            // Suppress all output that could pollute the JSON-RPC stdout stream
+            error_reporting(E_ERROR | E_PARSE);
+            Logger::setLogger((new \Monolog\Logger('mcp'))->pushHandler(new \Monolog\Handler\NullHandler()));
             $mcpServer = new McpServer($facadeHandler);
             $mcpServer->run();
             return null;
