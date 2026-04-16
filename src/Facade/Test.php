@@ -3,6 +3,7 @@
 namespace Rxkk\App\Facade;
 
 
+use Rxkk\Lib\Curl;
 use Rxkk\Lib\Env;
 use Rxkk\Lib\MySQL;
 
@@ -33,6 +34,20 @@ class Test {
     public static function env($envName) {
         $envValue = Env::get($envName);
         return $envValue;
+    }
+
+    /**
+     * @DOC test Curl helper — POST to requestmirror.dev with JSON body
+     * @EXAMPLE x Test::curl
+     * @MCP Sends a POST request to requestmirror.dev and returns the mirrored response. Use to verify Curl helper works.
+     */
+    public static function curl(): mixed
+    {
+        $response = Curl::post('https://requestmirror.dev/api/v1/test/123', [
+            'json' => ['foo' => 'bar'],
+        ]);
+
+        return $response->data;
     }
 
     /**
