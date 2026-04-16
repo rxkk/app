@@ -65,7 +65,7 @@ function commandHandler($command, $argv) {
             $ticket_command_sub = $argv[3] ?? '';
             return "custom command: $ticket_command $ticket_command_sub";
         case 'code':
-            $facadeHandler->printFullList();
+            $facadeHandler->printFullList($argv[2] ?? null);
             return null;
         case 'mcp':
             // Suppress all output that could pollute the JSON-RPC stdout stream

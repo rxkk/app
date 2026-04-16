@@ -17,6 +17,11 @@ get the list of commands
 ./x code
 ```
 
+find command
+```bash
+./x code curl
+```
+
 run a specific command
 ```bash
 ./x Test::example someArg

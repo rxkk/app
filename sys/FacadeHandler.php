@@ -199,8 +199,7 @@ class FacadeHandler {
     /**
      * @return void
      */
-    public function printFullList() {
-        // Get all files in the facade directory
+    public function printFullList(?string $search = null) {
         $files = glob($this->facadeRoot . '*.php');
 
         foreach ($files as $file) {
@@ -208,18 +207,11 @@ class FacadeHandler {
             $class = $this->facadeNamespace . '\\' . $file;
 
             $reflectionClass = new \ReflectionClass($class);
-
             $className = $reflectionClass->getShortName();
 
-            # get doc comment for class
-            $classDoc = $reflectionClass->getDocComment();
-            preg_match('/@DOC (.*)/', $classDoc, $matches);
-            if (isset($matches[1])) {
-                $doc = "\n\n $className - " . $matches[1];
-                Console::log($doc, Console::COLOR_BREEZE);
-            }
-
             $publicMethods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
+
+            $matchedLines = [];
             foreach ($publicMethods as $publicMethod) {
                 $methodName = $publicMethod->getName();
 
@@ -227,11 +219,37 @@ class FacadeHandler {
                 $docComment = $method->getDocComment();
 
                 preg_match('/@DOC (.*)/', $docComment, $matches);
-                if (isset($matches[1])) {
-                    $doc = " - x $className::$methodName - $matches[1]";
-                    Console::log($doc, Console::COLOR_GREEN);
+                if (!isset($matches[1])) {
+                    continue;
                 }
+
+                $line = " - x $className::$methodName - $matches[1]";
+
+                if ($search !== null && !self::matchesSearch($search, "$className::$methodName $matches[1]")) {
+                    continue;
+                }
+
+                $matchedLines[] = $line;
+            }
+
+            if (empty($matchedLines)) {
+                continue;
+            }
+
+            $classDoc = $reflectionClass->getDocComment();
+            preg_match('/@DOC (.*)/', $classDoc, $matches);
+            if (isset($matches[1])) {
+                Console::log("\n\n $className - " . $matches[1], Console::COLOR_BREEZE);
+            }
+
+            foreach ($matchedLines as $line) {
+                Console::log($line, Console::COLOR_GREEN);
             }
         }
+    }
+
+    private static function matchesSearch(string $search, string $haystack): bool
+    {
+        return stripos($haystack, $search) !== false;
     }
 }
